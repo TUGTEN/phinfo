@@ -22,7 +22,7 @@ class FileService {
   generateFile() async {
     final Directory directory = await getExternalStorageDirectory();
     _filename = _genFilename(_deviceInfo);
-    _filepath = '${directory.path}/' + filename + ".txt";
+    _filepath = '${directory.path}/' + filename + ".json";
     print(_deviceInfo.toJson());
     File(filepath).writeAsStringSync(_deviceInfo.toJson());
   }
@@ -30,6 +30,6 @@ class FileService {
   String _genFilename(DeviceInfo deviceInfo) {
     return deviceInfo.board +
         deviceInfo.androidId +
-        DateTime.now().toIso8601String();
+        DateTime.now().toString();
   }
 }
