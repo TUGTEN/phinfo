@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:phinfo/main.dart';
 import 'package:phinfo/phinfo.dart';
 
 void main() {

@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:device_info/device_info.dart';
+import 'package:system_info/system_info.dart';
+
 class DeviceInfo {
   final String androidId;
   final String board;
@@ -27,7 +30,26 @@ class DeviceInfo {
   final List<String> systemFeatures;
   final String tags;
   final String type;
-  final String version;
+
+  //SystemInfo
+  final String kernelArchitecture;
+  final int kernelBitness;
+  final String kernelName;
+  final String kernelVersion;
+  final String operatingSystemName;
+  final String operatingSystemVersion;
+  final int processorsCount;
+  final List<Map<String, dynamic>> processorInfo;
+  final String userDirectory;
+  final String userId;
+  final String userName;
+  final int userSpaceBitness;
+  final int freePMemory;
+  final int freeVMemory;
+  final int totalPMemory;
+  final int totalVMemory;
+  final int vMemorySize;
+
   DeviceInfo({
     this.androidId,
     this.board,
@@ -55,8 +77,30 @@ class DeviceInfo {
     this.systemFeatures,
     this.tags,
     this.type,
-    this.version,
-  });
+  })  : kernelArchitecture = SysInfo.kernelArchitecture,
+        kernelBitness = SysInfo.kernelBitness,
+        kernelName = SysInfo.kernelName,
+        kernelVersion = SysInfo.kernelVersion,
+        operatingSystemName = SysInfo.operatingSystemName,
+        operatingSystemVersion = SysInfo.operatingSystemVersion,
+        processorsCount = SysInfo.processors.length,
+        processorInfo = SysInfo.processors
+            .map((ProcessorInfo info) => {
+                  "architecture": info.architecture.name,
+                  "name": info.name,
+                  "socket": info.socket,
+                  "vendor": info.vendor,
+                })
+            .toList(),
+        userDirectory = SysInfo.userDirectory,
+        userId = SysInfo.userId,
+        userName = SysInfo.userName,
+        userSpaceBitness = SysInfo.userSpaceBitness,
+        freePMemory = SysInfo.getFreePhysicalMemory(),
+        freeVMemory = SysInfo.getFreeVirtualMemory(),
+        totalPMemory = SysInfo.getTotalPhysicalMemory(),
+        totalVMemory = SysInfo.getTotalVirtualMemory(),
+        vMemorySize = SysInfo.getVirtualMemorySize();
 
   Map<String, dynamic> toMap() {
     return {
@@ -86,45 +130,58 @@ class DeviceInfo {
       'systemFeatures': systemFeatures,
       'tags': tags,
       'type': type,
-      'version': version,
+      'kernelArchitecture': kernelArchitecture,
+      'kernelBitness': kernelBitness,
+      'kernelName': kernelName,
+      'kernelVersion': kernelVersion,
+      'operatingSystemName': operatingSystemName,
+      'operatingSystemVersion': operatingSystemVersion,
+      'processorsCount': processorsCount,
+      'processorInfo': processorInfo,
+      'userDirectory': userDirectory,
+      'userId': userId,
+      'userName': userName,
+      'userSpaceBitness': userSpaceBitness,
+      'freePhysicalMemory': freePMemory,
+      'freeVirtualMemory': freeVMemory,
+      'totalPhysicalMemory': totalPMemory,
+      'totalVirtualMemory': totalVMemory,
+      'virtualMemorySize': vMemorySize,
     };
-  }
-
-  factory DeviceInfo.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-  
-    return DeviceInfo(
-      androidId: map['androidId'],
-      board: map['board'],
-      bootloader: map['bootloader'],
-      baseOS: map['baseOS'],
-      codename: map['codename'],
-      brand: map['brand'],
-      device: map['device'],
-      display: map['display'],
-      fingerprint: map['fingerprint'],
-      hardware: map['hardware'],
-      host: map['host'],
-      incremental: map['incremental'],
-      id: map['id'],
-      manufacturer: map['manufacturer'],
-      model: map['model'],
-      product: map['product'],
-      previewSdkInt: map['previewSdkInt'],
-      release: map['release'],
-      sdkInt: map['sdkInt'],
-      securityPatch: map['securityPatch'],
-      supported32BitAbis: List<String>.from(map['supported32BitAbis']),
-      supported64BitAbis: List<String>.from(map['supported64BitAbis']),
-      supportedAbis: List<String>.from(map['supportedAbis']),
-      systemFeatures: List<String>.from(map['systemFeatures']),
-      tags: map['tags'],
-      type: map['type'],
-      version: map['version'],
-    );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory DeviceInfo.fromJson(String source) => DeviceInfo.fromMap(json.decode(source));
+  factory DeviceInfo.fromInfo(AndroidDeviceInfo map) {
+    if (map == null) return null;
+
+    return DeviceInfo(
+      androidId: map.androidId,
+      board: map.board,
+      bootloader: map.bootloader,
+      baseOS: map.version.baseOS,
+      codename: map.version.codename,
+      brand: map.brand,
+      device: map.device,
+      display: map.display,
+      fingerprint: map.fingerprint,
+      hardware: map.hardware,
+      host: map.host,
+      incremental: map.version.incremental,
+      id: map.id,
+      manufacturer: map.manufacturer,
+      model: map.model,
+      product: map.product,
+      previewSdkInt: map.version.previewSdkInt,
+      release: map.version.release,
+      sdkInt: map.version.sdkInt,
+      securityPatch: map.version.securityPatch,
+      supported32BitAbis: map.supported32BitAbis,
+      supported64BitAbis: map.supported64BitAbis,
+      supportedAbis: map.supportedAbis,
+      systemFeatures: map.systemFeatures,
+      tags: map.tags,
+      type: map.type,
+    );
+  }
 }
