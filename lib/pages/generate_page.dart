@@ -69,6 +69,7 @@ class _GeneratePageState extends State<GeneratePage> {
                             onPressed: () {
                               Share.shareFiles(
                                 [filepath],
+                                subject: "ALPAPP UX: Device info"
                               );
                             })
                       ],
